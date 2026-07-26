@@ -183,6 +183,15 @@ python3 ~/.hermes/scripts/pipeline_watchdog.py status
 | **[2]** | **后台守护进程** `pipeline-monitor` | 每 30 分钟 | `.bashrc` 自启 |
 | **[3]** | **手动** scan | 随时 | 手动触发 |
 
+### 10. Claude Code + DeepSeek 后端 thinking 兼容性
+```
+❌ 问题: DeepSeek Anthropic 兼容接口不支持 thinking 模式
+   错误: "The content[].thinking in the thinking mode must be passed back to the API"
+   结果: Claude Code 启动后立即崩溃，不写任何代码
+✅ 修复: tab1-auto.sh 添加 ANTHROPIC_DANGEROUSLY_NO_THINKING=1
+   禁用 thinking 模式后 DeepSeek 正常响应
+```
+
 ## 依赖 Skill
 
 | Skill | 用途 |
