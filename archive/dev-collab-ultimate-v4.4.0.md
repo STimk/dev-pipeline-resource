@@ -1,6 +1,6 @@
 ---
 name: dev-collab-ultimate-v4
-description: 稳定版 v4 — dev-collab-auto + dual-remote-git + dev-pipeline-auto 三合一，门控去重+严格步进+dev-log
+description: 冻结版 v4 — dev-collab-auto + dual-remote-git + dev-pipeline-auto 三合一，门控去重+严格步进+dev-log
 version: 4.4.0
 
 # Dev Collab Ultimate v4.4.0 — 门控去重 + 步进依赖锁

@@ -65,7 +65,7 @@ dev-pipeline-resource/
 cp skill/SKILL.md ~/.hermes/skills/software-development/dev-collab-ultimate-v4/
 
 # 验证
-hermes -s dev-collab-ultimate-v4
+hermes -s dev-collab-ultimate-v5
 ```
 
 ### 步骤 2：安装脚本
@@ -211,7 +211,7 @@ ls archive/
 cp archive/dev-collab-ultimate-v3.0.0.md skill/SKILL.md
 
 # 重新加载 skill
-hermes -s dev-collab-ultimate-v4
+hermes -s dev-collab-ultimate-v5
 ```
 
 ## 依赖
