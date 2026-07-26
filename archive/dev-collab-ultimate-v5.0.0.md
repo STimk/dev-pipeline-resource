@@ -1,6 +1,6 @@
 ---
 name: dev-collab-ultimate-v5
-description: 冻结版 v5.0.0 — dev-collab-auto + dual-remote-git + dev-pipeline-auto 三合一，门控去重+严格步进+dev-log+动态分配+视觉验证+修复回环
+description: 冻结版 v5.0.0 — 门控去重+步进锁+dev-log+动态分配+视觉验证+修复回环+三重闭环+thinking修复，10坑全修
 version: 5.0.0
 ---
 

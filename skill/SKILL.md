@@ -1,6 +1,6 @@
 ---
 name: dev-collab-ultimate-v6
-description: 活跃版 v6.0.0 — dev-collab-auto + dual-remote-git + dev-pipeline-auto 三合一，门控去重+严格步进+dev-log+动态分配+视觉验证+修复回环
+description: active v6.0.0 — 门控去重+步进锁+dev-log+动态分配+视觉验证+修复回环+三重闭环+thinking修复，10坑全修。版本名固定，后续迭代不更名
 version: 6.0.0
 ---
 
