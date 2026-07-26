@@ -196,9 +196,10 @@ python3 ~/.hermes/scripts/pipeline_watchdog.py force
 | 版本 | 路径 | 状态 |
 |------|------|------|
 | v3.0.0 | `archive/dev-collab-ultimate-v3.0.0.md` | 初代版（冻结） |
-| v4.4.0 | `skill/SKILL.md` | **稳定版（当前）** |
+| v4.4.0 | `archive/dev-collab-ultimate-v4.4.0.md` | 冻结版 |
+| **v5.0.0** | `skill/SKILL.md` | **活跃版（当前）** |
 
-> 每次更新版本时，我会把当前稳定版复制到 `archive/` 再更新 `skill/SKILL.md`。
+> 每次更新版本时，我会把当前活跃版复制到 `archive/` 再更新 `skill/SKILL.md`。
 > 需要回退时直接取 `archive/` 里对应版本覆盖 `skill/SKILL.md` 即可。
 
 ### 版本回退方法
