@@ -86,14 +86,30 @@ def call_claude_fix(error_context: str, project_dir: str):
 3. 确保修复后 pytest 全部通过
 4. 只修改必要的代码，不要重写整个文件
 """
+    # 设置 DeepSeek 后端环境变量
+    env = os.environ.copy()
+    env["ANTHROPIC_BASE_URL"] = "https://api.deepseek.com/anthropic"
+    # 从 credentials 读取 API key
+    cred_file = Path.home() / ".config" / "opencode" / "credentials.sh"
+    if cred_file.exists():
+        for line in cred_file.read_text().splitlines():
+            if "DEEPSEEK_API_KEY" in line:
+                key = line.split("=", 1)[-1].strip().strip("'\"")
+                env["ANTHROPIC_API_KEY"] = key
+                break
+
     try:
         subprocess.run(
-            ["claude", "-p", fix_prompt,
+            ["/home/zhang/.local/bin/claude", "-p", fix_prompt,
              "--dangerously-skip-permissions", "--max-turns", "15"],
-            cwd=project_dir, timeout=180,
+            cwd=project_dir, timeout=180, env=env,
         )
         return True
-    except (subprocess.TimeoutExpired, FileNotFoundError):
+    except subprocess.TimeoutExpired:
+        print("⚠️ Claude Code 超时")
+        return False
+    except FileNotFoundError:
+        print("⚠️ Claude Code 未安装")
         return False
 
 
