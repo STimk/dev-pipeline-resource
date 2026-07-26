@@ -34,21 +34,13 @@ echo ""
 4. 全部完成后，在 /mnt/f/AI_Work/Agent/Hermes/Sandbox/.workspace/claude_task.md 末尾追加一行: ✅ step_3_done
 " --dangerously-skip-permissions --max-turns 30
 
-# 不设兜底标记 — 如果 Claude Code 没写 step_3_done，自动重试最多2次
-CLAUDE_RETRIES=0
-while ! grep -q "^✅ step_3_done" .workspace/claude_task.md 2>/dev/null; do
-    CLAUDE_RETRIES=$((CLAUDE_RETRIES + 1))
-    if [ $CLAUDE_RETRIES -gt 2 ]; then
-        echo "❌ Claude Code 重试${CLAUDE_RETRIES}次仍未完成"
-        break
-    fi
-    echo "⚠️ Claude Code 退出但未标记完成，重新启动 ($CLAUDE_RETRIES/2)..."
-    /home/zhang/.local/bin/claude -p "
-请继续完成 claude_task.md 中描述的工作。
-部分代码已存在，请检查并完成剩余文件。
-全部完成后，在 .workspace/claude_task.md 末尾追加一行: ✅ step_3_done
-" --dangerously-skip-permissions --max-turns 20
-done
-
+# 不设兜底标记 — 如果 Claude Code 没写 step_3_done，下游会等超时报错
+# 好过写假标记或盲目重试导致循环
+echo ""
+echo "⚠️ 检查 step_3_done 标记..."
+if ! grep -q "^✅ step_3_done" .workspace/claude_task.md 2>/dev/null; then
+    echo "   step_3_done 未写入 — Claude Code 可能遇到 API 错误"
+    echo "   查看上方输出确认原因，修复后重新运行"
+fi
 echo ""
 echo "✅ 编码完成 — step_3_done"
