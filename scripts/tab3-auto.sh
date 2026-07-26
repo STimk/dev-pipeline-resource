@@ -11,7 +11,7 @@ export NVM_DIR="$HOME/.nvm"
 cd /mnt/f/AI_Work/Agent/Hermes/Sandbox
 
 echo "==============================================="
-echo " OpenCode — 测试 (步进锁 v3)"
+echo " OpenCode — 测试 (步进锁 v1.1.0)"
 echo " 5秒后检查依赖，等编码完成自动开始"
 echo "==============================================="
 echo ""

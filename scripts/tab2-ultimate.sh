@@ -1,5 +1,5 @@
 #!/bin/bash
-# Tab 2: Ultimate — 验证+清理+归档+双推（v4.2 修复版）
+# Tab 2: Ultimate — 验证+清理+归档+双推（v1.1.0）
 # 依赖: 等 opencode_task.md 出现 "step_4_done" 再开始
 # 纯 bash 执行，无截图，无 OpenClaw
 
@@ -26,7 +26,7 @@ DONE_DIR="$PIPELINE_DIR/开发完/$PROJECT_NAME"
 DEV_LOG="$PIPELINE_DIR/.dev-logs/$PROJECT_NAME.json"
 
 echo "================================================"
-echo " Ultimate — 验证+清理+归档+双推 (v5.0.0)"
+echo " Ultimate — 验证+清理+归档+双推 (v1.1.0)"
 echo " 检查依赖，等测试完成自动开始"
 echo "================================================"
 echo ""
@@ -92,8 +92,17 @@ while [ $RETRIES -lt $MAX_RETRIES ]; do
 done
 
 if [ $RETRIES -ge $MAX_RETRIES ]; then
-    echo "❌ 等待测试文件超时 (${MAX_RETRIES}次)，停止归档"
-    exit 1
+    # 降级策略：搜索根目录的 test_*.py 文件
+    echo "   ⚠️ 未找到 tests/ 目录，尝试搜索 test_*.py 文件..."
+    TEST_FILE=$(find "$PROJECT_DIR" -maxdepth 2 -name "test_*.py" 2>/dev/null | head -1)
+    if [ -n "$TEST_FILE" ]; then
+        PYTEST_TARGET=$(python3 -c "import os; print(os.path.relpath('$TEST_FILE', '$PYTEST_ROOT'))")
+        SUBDIR=$(dirname "$TEST_FILE")
+        echo "   ✅ 找到根目录测试文件: $PYTEST_TARGET"
+    else
+        echo "❌ 等待测试文件超时 (${MAX_RETRIES}次)，停止归档"
+        exit 1
+    fi
 fi
 
 cd "$PYTEST_ROOT" || { echo "❌ 无法进入项目目录: $PYTEST_ROOT"; exit 1; }
@@ -140,6 +149,12 @@ while [ $PYTEST_EXIT -ne 0 ] && [ $FIX_ATTEMPT -lt $MAX_FIX_ATTEMPTS ]; do
     PYTEST_TARGET=""
     if [ -n "$SUBDIR" ]; then
         PYTEST_TARGET=$(python3 -c "import os; print(os.path.relpath('$SUBDIR', '$PYTEST_ROOT'))")
+    else
+        # 降级：搜索根目录 test_*.py
+        TEST_FILE=$(find "$PROJECT_DIR" -maxdepth 2 -name "test_*.py" 2>/dev/null | head -1)
+        if [ -n "$TEST_FILE" ]; then
+            PYTEST_TARGET=$(python3 -c "import os; print(os.path.relpath('$TEST_FILE', '$PYTEST_ROOT'))")
+        fi
     fi
     echo "   重新验证 (目标: ${PYTEST_TARGET:-无})..."
     python3 -m pytest "$PYTEST_TARGET" -v 2>&1

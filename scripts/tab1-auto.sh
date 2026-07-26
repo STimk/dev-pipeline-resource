@@ -11,7 +11,7 @@ export ANTHROPIC_DANGEROUSLY_NO_THINKING=1
 cd /mnt/f/AI_Work/Agent/Hermes/Sandbox
 
 echo "============================================="
-echo " Claude Code — 编码 (步进锁 v3)"
+echo " Claude Code — 编码 (步进锁 v1.1.0)"
 echo " 5秒后自动执行"
 echo "============================================="
 echo ""
