@@ -65,7 +65,7 @@ dev-pipeline-resource/
 cp skill/SKILL.md ~/.hermes/skills/software-development/dev-collab-ultimate-v4/
 
 # 验证
-hermes -s dev-collab-ultimate-v5
+hermes -s dev-collab-ultimate-v6
 ```
 
 ### 步骤 2：安装脚本
@@ -197,7 +197,8 @@ python3 ~/.hermes/scripts/pipeline_watchdog.py force
 |------|------|------|
 | v3.0.0 | `archive/dev-collab-ultimate-v3.0.0.md` | 初代版（冻结） |
 | v4.4.0 | `archive/dev-collab-ultimate-v4.4.0.md` | 冻结版 |
-| **v5.0.0** | `skill/SKILL.md` | **活跃版（当前）** |
+| v5.0.0 | `archive/dev-collab-ultimate-v5.0.0.md` | 冻结版 |
+| **v6.0.0** | `skill/SKILL.md` | **活跃版（当前）** |
 
 > 每次更新版本时，我会把当前活跃版复制到 `archive/` 再更新 `skill/SKILL.md`。
 > 需要回退时直接取 `archive/` 里对应版本覆盖 `skill/SKILL.md` 即可。
@@ -212,7 +213,7 @@ ls archive/
 cp archive/dev-collab-ultimate-v3.0.0.md skill/SKILL.md
 
 # 重新加载 skill
-hermes -s dev-collab-ultimate-v5
+hermes -s dev-collab-ultimate-v6
 ```
 
 ## 依赖
