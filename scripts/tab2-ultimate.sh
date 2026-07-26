@@ -61,17 +61,27 @@ echo ""
 # ── 智能 pytest: 找到代码目录下的 tests/ 并运行（含重试）──
 echo "=== [步5] pytest 验证 ==="
 cd "$PROJECT_DIR" 2>/dev/null || cd "$DEV_PIPELINE_DIR" 2>/dev/null || { echo "❌ 项目目录不存在"; exit 1; }
-
-PYTEST_ROOT="$PROJECT_DIR"
+# 记录实际进入的目录
+PYTEST_ROOT=$(pwd)
 
 # 重试循环: 最多等 60 秒等测试文件就绪
 RETRIES=0
 MAX_RETRIES=12
 while [ $RETRIES -lt $MAX_RETRIES ]; do
-    SUBDIR=$(find "$PROJECT_DIR" -type d -name "tests" 2>/dev/null | head -1)
+    # 同时搜索 Sandbox 和 开发中/
+    SUBDIR=""
+    for search_dir in "$PROJECT_DIR" "$DEV_PIPELINE_DIR"; do
+        if [ -d "$search_dir" ]; then
+            FOUND=$(find "$search_dir" -maxdepth 3 -type d -name "tests" 2>/dev/null | head -1)
+            if [ -n "$FOUND" ]; then
+                SUBDIR="$FOUND"
+                break
+            fi
+        fi
+    done
     PYTEST_TARGET=""
     if [ -n "$SUBDIR" ]; then
-        PYTEST_TARGET=$(python3 -c "import os; print(os.path.relpath('$SUBDIR', '$PROJECT_DIR'))")
+        PYTEST_TARGET=$(python3 -c "import os; print(os.path.relpath('$SUBDIR', '$PYTEST_ROOT'))")
         if [ -n "$PYTEST_TARGET" ] && [ -d "$SUBDIR" ] && [ "$(ls -A "$SUBDIR" 2>/dev/null | grep -c '.py')" -gt 0 ]; then
             break  # 找到有效的测试目录
         fi
@@ -116,11 +126,20 @@ while [ $PYTEST_EXIT -ne 0 ] && [ $FIX_ATTEMPT -lt $MAX_FIX_ATTEMPTS ]; do
     echo "🔄 [修复回环 ${FIX_ATTEMPT}/${MAX_FIX_ATTEMPTS}] pytest 失败 (exit=$PYTEST_EXIT)，调用 Claude Code 修复..."
     python3 /home/zhang/.hermes/scripts/pipeline-fix-loop.py "$PROJECT_DIR" --max-attempts 1 2>&1 | tail -5
     echo "   重新查找测试目录..."
-    # 每次修复后重新查找，因为 Claude Code 可能改变了目录结构
-    SUBDIR=$(find "$PROJECT_DIR" -type d -name "tests" 2>/dev/null | head -1)
+    # 每次修复后重新查找，同时搜索 Sandbox 和 开发中/
+    SUBDIR=""
+    for search_dir in "$PROJECT_DIR" "$DEV_PIPELINE_DIR"; do
+        if [ -d "$search_dir" ]; then
+            FOUND=$(find "$search_dir" -maxdepth 3 -type d -name "tests" 2>/dev/null | head -1)
+            if [ -n "$FOUND" ]; then
+                SUBDIR="$FOUND"
+                break
+            fi
+        fi
+    done
     PYTEST_TARGET=""
     if [ -n "$SUBDIR" ]; then
-        PYTEST_TARGET=$(python3 -c "import os; print(os.path.relpath('$SUBDIR', '$PROJECT_DIR'))")
+        PYTEST_TARGET=$(python3 -c "import os; print(os.path.relpath('$SUBDIR', '$PYTEST_ROOT'))")
     fi
     echo "   重新验证 (目标: ${PYTEST_TARGET:-无})..."
     python3 -m pytest "$PYTEST_TARGET" -v 2>&1
