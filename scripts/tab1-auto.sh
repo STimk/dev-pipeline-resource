@@ -5,6 +5,8 @@
 source ~/.config/opencode/credentials.sh
 export ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic"
 export ANTHROPIC_API_KEY="$DEEPSEEK_API_KEY"
+# 禁用 thinking 模式（DeepSeek Anthropic 兼容接口不支持）
+export ANTHROPIC_DANGEROUSLY_NO_THINKING=1
 
 cd /mnt/f/AI_Work/Agent/Hermes/Sandbox
 
