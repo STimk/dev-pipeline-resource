@@ -88,10 +88,40 @@ fi
 
 cd "$PYTEST_ROOT" || { echo "❌ 无法进入项目目录: $PYTEST_ROOT"; exit 1; }
 echo "   📁 找到测试: $PYTEST_TARGET"
+
+# ── v5 视觉验证（如果配置需要）──
+CONFIG_FILE="$WORKSPACE/config.json"
+NEED_VISION=$(python3 -c "import json; d=json.load(open('$CONFIG_FILE')); print('true' if d.get('need_vision') else 'false')" 2>/dev/null || echo "false")
+if [ "$NEED_VISION" = "true" ]; then
+    echo "=== [步4.5] 视觉验证 (OpenClaw + Kimi) ==="
+    python3 /home/zhang/.hermes/scripts/pipeline-vision-check.py "$PROJECT_DIR" 2>&1
+    VISION_EXIT=$?
+    if [ $VISION_EXIT -ne 0 ]; then
+        echo "⚠️ 视觉验证发现异常，继续 pytest 验证"
+    else
+        echo "✅ 视觉验证通过"
+    fi
+    echo ""
+fi
+
+# ── v5 自动修复回环 ──
+MAX_FIX_ATTEMPTS=3
 python3 -m pytest "$PYTEST_TARGET" -v 2>&1
 PYTEST_EXIT=$?
+
+FIX_ATTEMPT=0
+while [ $PYTEST_EXIT -ne 0 ] && [ $FIX_ATTEMPT -lt $MAX_FIX_ATTEMPTS ]; do
+    FIX_ATTEMPT=$((FIX_ATTEMPT + 1))
+    echo ""
+    echo "🔄 [修复回环 ${FIX_ATTEMPT}/${MAX_FIX_ATTEMPTS}] pytest 失败 (exit=$PYTEST_EXIT)，调用 Claude Code 修复..."
+    python3 /home/zhang/.hermes/scripts/pipeline-fix-loop.py "$PROJECT_DIR" --max-attempts 1 2>&1 | tail -5
+    echo "   重新验证..."
+    python3 -m pytest "$PYTEST_TARGET" -v 2>&1
+    PYTEST_EXIT=$?
+done
+
 if [ $PYTEST_EXIT -ne 0 ]; then
-    echo "❌ pytest 失败 (exit=$PYTEST_EXIT)，停止归档"
+    echo "❌ pytest 失败 (exit=$PYTEST_EXIT)，${MAX_FIX_ATTEMPTS} 轮修复均未通过，停止归档"
     exit $PYTEST_EXIT
 fi
 echo "✅ pytest 全部通过"

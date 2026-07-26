@@ -6,7 +6,53 @@ version: 5.0.0
 
 # Dev Collab Ultimate v5.0.0 — 门控去重 + 步进依赖锁
 
-> 从 v4.4.0 冻结版复制，后续在此版本上修改
+> 从 v4.4.0 冻结版复制，v5 新增四大能力
+
+## v5 新增能力概览
+
+| 能力 | 模块 | 说明 |
+|------|------|------|
+| **动态分配** | `pipeline-analyzer.py` | 分析方案自动判断难度(1-3)，动态分配 V4-Flash/Pro 模型 |
+| **视觉验证** | `pipeline-vision-check.py` | 需要时调用 OpenClaw+Kimi 截图验证界面渲染 |
+| **修复回环** | `pipeline-fix-loop.py` | pytest 失败自动调用 Claude Code 修复，最多 3 轮 |
+| **三级同步** | workspace + dev-log + git | 任务传递 + 状态追踪 + 持久化 |
+
+### 动态难度分配
+
+```
+方案分析 → pipeline-analyzer.py:
+  ├─ 难度1(简单): <5功能点, 单模块 → 编码:Flash, 测试:Flash
+  ├─ 难度2(中等): 5-10功能点, 2-3模块 → 编码:Flash, 测试:Pro
+  └─ 难度3(困难): >10功能点, GUI/复杂算法 → 编码:Pro, 测试:Pro
+
+视觉验证: 检测方案关键词(GUI/Web/界面/curses等) → 自动启用
+```
+
+### 自动修复回环
+
+```
+Tab2 pytest 失败
+    ↓
+pipeline-fix-loop.py 捕获错误 → 提取失败测试 + 错误行号
+    ↓
+调用 Claude Code 修复（传入错误上下文）
+    ↓
+重新 pytest → 如果仍有失败 → 最多 3 轮
+    ↓
+全部通过 → 归档 | 3轮未过 → 停止 + dev-log 记录
+```
+
+### 视觉验证（按需启用）
+
+```
+config.json need_vision=true
+    ↓
+tab2 自动调用 pipeline-vision-check.py:
+  ├─ 启动目标程序
+  ├─ OpenClaw 截图
+  ├─ Kimi 视觉分析界面渲染
+  └─ 输出验证结果
+```
 
 ## 概述
 

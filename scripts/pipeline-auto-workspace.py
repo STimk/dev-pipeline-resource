@@ -13,9 +13,13 @@
   4. 生成 opencode_task.md（测试任务 + step_4_done）
 """
 
-import os, sys, re
+import os, sys, re, json
 from pathlib import Path
 from datetime import datetime
+
+# 导入分析器
+sys.path.insert(0, str(Path.home() / ".hermes" / "scripts"))
+from pipeline_analyzer import analyze_plan, generate_model_config
 
 SANDBOX = Path("/mnt/f/AI_Work/Agent/Hermes/Sandbox")
 WORKSPACE = SANDBOX / ".workspace"
@@ -136,6 +140,19 @@ def main():
     project_name = extract_project_name(plan_path)
     description = extract_description(plan_path)
     techs = extract_tech_stack(plan_path)
+    
+    # ── v5 动态分析: 难度 + 模型 + 视觉 ──
+    analysis = analyze_plan(plan_path)
+    model_config = generate_model_config(analysis)
+    print(f"📊 难度等级: {analysis['difficulty']} ({'简单' if analysis['difficulty']==1 else '中等' if analysis['difficulty']==2 else '困难'})")
+    print(f"  编码模型: V4-{'Flash' if analysis['coding_model']=='flash' else 'Pro'}")
+    print(f"  测试模型: V4-{'Flash' if analysis['testing_model']=='flash' else 'Pro'}")
+    print(f"  视觉验证: {'是 - ' + analysis['vision_reason'] if analysis['need_vision'] else '否'}")
+    
+    # 写入 config.json 供 tab 脚本读取
+    config_path = WORKSPACE / "config.json"
+    config_path.write_text(json.dumps(analysis, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"✅ config.json (动态配置)")
     
     # 创建 workspace 目录
     WORKSPACE.mkdir(parents=True, exist_ok=True)
