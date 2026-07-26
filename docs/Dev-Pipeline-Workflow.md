@@ -8,7 +8,13 @@ status: active
 
 ## 调用的 Skill
 
-`dev-collab-ultimate-v4` v4.1.0
+`dev-collab-ultimate-active` active（固定部署版）
+
+## 资源包
+
+完整资源包（skill + 脚本 + 文档）：
+- GitHub: https://github.com/STimk/dev-pipeline-resource
+- Gitee: https://gitee.com/stimker/dev-pipeline-resource
 
 ## 三重闭环触发
 
