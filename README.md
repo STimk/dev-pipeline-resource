@@ -193,18 +193,26 @@ python3 ~/.hermes/scripts/pipeline_watchdog.py force
 
 ## 版本历史
 
-| 版本 | 变更 |
-|------|------|
-| v3.0.0 | 稳定版（冻结） |
-| v4.0.0 | 从 v3 复制，开始新开发 |
-| v4.1.0 | 修复 step标记/项目名/清理开发中/grep |
-| v4.2.0 | 修复 pytest 目录 |
-| v4.2.1 | 同上修复改版 |
-| v4.2.2 | 删除兜底 fallback |
-| v4.2.3 | TOCTOU 重试 |
-| v4.3.0 | 全部 8 个 Bug 修复 |
-| v4.3.1 | grep ^ 行开头锚定 |
-| **v4.4.0** | **步进锁严格串行（稳定版）** |
+| 版本 | 路径 | 状态 |
+|------|------|------|
+| v3.0.0 | `archive/dev-collab-ultimate-v3.0.0.md` | 初代版（冻结） |
+| v4.4.0 | `skill/SKILL.md` | **稳定版（当前）** |
+
+> 每次更新版本时，我会把当前稳定版复制到 `archive/` 再更新 `skill/SKILL.md`。
+> 需要回退时直接取 `archive/` 里对应版本覆盖 `skill/SKILL.md` 即可。
+
+### 版本回退方法
+
+```bash
+# 查看所有归档版本
+ls archive/
+
+# 回退到 v3.0.0
+cp archive/dev-collab-ultimate-v3.0.0.md skill/SKILL.md
+
+# 重新加载 skill
+hermes -s dev-collab-ultimate-v4
+```
 
 ## 依赖
 
