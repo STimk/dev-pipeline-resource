@@ -26,7 +26,7 @@ DONE_DIR="$PIPELINE_DIR/开发完/$PROJECT_NAME"
 DEV_LOG="$PIPELINE_DIR/.dev-logs/$PROJECT_NAME.json"
 
 echo "================================================"
-echo " Ultimate — 验证+清理+归档+双推 (v4.2.2)"
+echo " Ultimate — 验证+清理+归档+双推 (v5.0.0)"
 echo " 检查依赖，等测试完成自动开始"
 echo "================================================"
 echo ""
@@ -115,7 +115,14 @@ while [ $PYTEST_EXIT -ne 0 ] && [ $FIX_ATTEMPT -lt $MAX_FIX_ATTEMPTS ]; do
     echo ""
     echo "🔄 [修复回环 ${FIX_ATTEMPT}/${MAX_FIX_ATTEMPTS}] pytest 失败 (exit=$PYTEST_EXIT)，调用 Claude Code 修复..."
     python3 /home/zhang/.hermes/scripts/pipeline-fix-loop.py "$PROJECT_DIR" --max-attempts 1 2>&1 | tail -5
-    echo "   重新验证..."
+    echo "   重新查找测试目录..."
+    # 每次修复后重新查找，因为 Claude Code 可能改变了目录结构
+    SUBDIR=$(find "$PROJECT_DIR" -type d -name "tests" 2>/dev/null | head -1)
+    PYTEST_TARGET=""
+    if [ -n "$SUBDIR" ]; then
+        PYTEST_TARGET=$(python3 -c "import os; print(os.path.relpath('$SUBDIR', '$PROJECT_DIR'))")
+    fi
+    echo "   重新验证 (目标: ${PYTEST_TARGET:-无})..."
     python3 -m pytest "$PYTEST_TARGET" -v 2>&1
     PYTEST_EXIT=$?
 done
