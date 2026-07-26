@@ -198,6 +198,8 @@ python3 ~/.hermes/scripts/pipeline_watchdog.py force
 | v3.0.0 | `archive/dev-collab-ultimate-v3.0.0.md` | 初代版（冻结） |
 | v4.4.0 | `archive/dev-collab-ultimate-v4.4.0.md` | 冻结版 |
 | v5.0.0 | `archive/dev-collab-ultimate-v5.0.0.md` | 冻结版 |
+| v5.0.0 | `archive/dev-collab-ultimate-v5.0.0.md` | 冻结版 |
+| **v4.4** | `archive/dev-collab-ultimate-v4.4.md` | **部署版（下载即用）** |
 | **v6.0.0** | `skill/SKILL.md` | **活跃版（当前）** |
 
 > 每次更新版本时，我会把当前活跃版复制到 `archive/` 再更新 `skill/SKILL.md`。
